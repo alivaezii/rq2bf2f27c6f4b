@@ -1,0 +1,23 @@
+name: postcheck
+
+on:
+  push:
+    branches: [zqfd12edb9]
+
+permissions:
+  contents: read
+
+jobs:
+  postcheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Clone the chain at this exact commit
+        run: |
+          set -euo pipefail
+          git clone --quiet --depth 200 "https://github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git checkout --quiet "${GITHUB_SHA}"
+
+      - name: Run trusted validator against the full chain
+        run: python3 repo/run.py post repo
